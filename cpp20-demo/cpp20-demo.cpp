@@ -1,9 +1,7 @@
 ﻿
-#include <format>
-#include <source_location>
-
 using namespace std;
 
+#include <format>
 void test_format()
 {
 	string who = "everyone";
@@ -37,6 +35,7 @@ void test_format()
 	}
 }
 
+#include <source_location>
 void test_location(std::source_location location = std::source_location::current())
 {
 	printf("called from: %s, %s \n", location.function_name(), location.file_name());
