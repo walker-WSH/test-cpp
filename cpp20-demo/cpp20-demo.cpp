@@ -28,6 +28,10 @@ void test_format()
 		str = format("double: {0} {0}\n", pi, who);
 		printf("%s", str.c_str());
 
+		//----------------------------------------------
+		// format for wstring
+		auto wstr = format(L"double:  {} {} {}\n", pi, L"teststr", L"hello");
+
 		// format for {}
 		str = format("double: {{}} {}\n", who);
 		printf("%s", str.c_str());
@@ -40,6 +44,7 @@ void test_format()
 		str = format("int: {:06X}  {:06x} \n", ival, ival);
 		printf("%s", str.c_str());
 
+		//----------------------------------------------
 		// test exception 不允许混合使用手动和自动索引，下列写法是非法的
 		str = format("read {0} bytes from {}", 100, "file.txt");
 		printf("%s", str.c_str());
