@@ -5,7 +5,7 @@ using namespace std;
 void test_format()
 {
 	string who = "everyone";
-	int ival = 789;
+	int ival = 15;
 	double pi = 3.1415926;
 
 	try {
@@ -28,8 +28,27 @@ void test_format()
 		str = format("double: {0} {0}\n", pi, who);
 		printf("%s", str.c_str());
 
+		// format for {}
+		str = format("double: {{}} {}\n", who);
+		printf("%s", str.c_str());
+
+		// 数字占多少位 不足的用0填充
+		str = format("int: {:06d}\n", ival);
+		printf("%s", str.c_str());
+
+		// 16进制显示数字
+		str = format("int: {:06X}  {:06x} \n", ival, ival);
+		printf("%s", str.c_str());
+
+		// test exception 不允许混合使用手动和自动索引，下列写法是非法的
+		str = format("read {0} bytes from {}", 100, "file.txt");
+		printf("%s", str.c_str());
+		
+		// test exception: params error
 		str = format("double: {3} {1}\n", pi, who);
 		printf("%s", str.c_str());
+
+
 	} catch (const std::exception &e) {
 		printf("exception: %s \n", e.what());
 	}
