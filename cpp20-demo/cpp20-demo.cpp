@@ -12,6 +12,10 @@ void test_format()
 		auto str = format("Hello, {}!\n", who);
 		printf("%s", str.c_str());
 
+		// 不能再用C语言的格式化符号了 最终输出的字符串就是"%d"
+		str = format("??? ??? integer: %d\n", ival);
+		printf("%s", str.c_str());
+
 		str = format("integer: {}\n", ival);
 		printf("%s", str.c_str());
 
