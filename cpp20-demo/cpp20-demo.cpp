@@ -69,8 +69,17 @@ void test_location(std::source_location location = std::source_location::current
 	printf("called from: %s, %s \n", location.function_name(), location.file_name());
 }
 
+inline size_t StringToID(std::string_view str)
+{
+	static std::hash<std::string_view> hash;
+	return hash(str);
+}
+
 int main()
 {
+	auto id = StringToID("123");
+	auto id2 = StringToID("123");
+
 	test_format();
 	test_location(); 
 
