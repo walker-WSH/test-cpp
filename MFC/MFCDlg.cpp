@@ -104,6 +104,17 @@ BOOL CMFCDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 设置小图标
 
 	// TODO: 在此添加额外的初始化代码
+	int argc = 0;
+	LPWSTR *argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+	if (argv) {
+		LocalFree(argv);
+	}
+
+	if (argc > 1) {
+		SetWindowText(_T("this is a child process"));
+	} else {
+		SetWindowText(_T("main process"));
+	}
 
 	return TRUE;  // 除非将焦点设置到控件，否则返回 TRUE
 }
@@ -169,6 +180,9 @@ void CMFCDlg::OnBnClickedOk()
 	wchar_t szPath[MAX_PATH] = {0};
 	::GetModuleFileName(nullptr, szPath, MAX_PATH);
 
+	wchar_t cmd[MAX_PATH] = {0};
+	swprintf_s(cmd, _T("%s --subprocess"), szPath);
+
 	HANDLE job_handle = ::CreateJobObject(nullptr, nullptr);
 
 	PROCESS_INFORMATION proc_info = {};
@@ -176,7 +190,7 @@ void CMFCDlg::OnBnClickedOk()
 	startup_info.cb = sizeof(startup_info);
 	startup_info.wShowWindow = SW_SHOW;
 
-	if (!::CreateProcess(nullptr, szPath, nullptr, nullptr, TRUE, CREATE_NEW_CONSOLE, nullptr, nullptr,
+	if (!::CreateProcess(nullptr, cmd, nullptr, nullptr, TRUE, CREATE_NEW_CONSOLE, nullptr, nullptr,
 			    &startup_info, &proc_info)) {
 		::CloseHandle(job_handle);
 		return;
