@@ -36,4 +36,6 @@ public:
 	afx_msg void OnBnClickedCancel();
 	afx_msg void OnBnClickedButtonKillChild();
 	afx_msg void OnBnClickedButtonCrash();
+	afx_msg void OnBnClickedButtonMsgbox();
+	afx_msg void OnBnClickedButtonWhile();
 };

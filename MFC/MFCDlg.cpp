@@ -69,6 +69,8 @@ BEGIN_MESSAGE_MAP(CMFCDlg, CDialogEx)
 	ON_BN_CLICKED(IDCANCEL, &CMFCDlg::OnBnClickedCancel)
 	ON_BN_CLICKED(IDC_BUTTON_KILL_CHILD, &CMFCDlg::OnBnClickedButtonKillChild)
 	ON_BN_CLICKED(IDC_BUTTON_CRASH, &CMFCDlg::OnBnClickedButtonCrash)
+	ON_BN_CLICKED(IDC_BUTTON_MSGBOX, &CMFCDlg::OnBnClickedButtonMsgbox)
+	ON_BN_CLICKED(IDC_BUTTON_WHILE, &CMFCDlg::OnBnClickedButtonWhile)
 	END_MESSAGE_MAP()
 
 
@@ -230,4 +232,16 @@ void CMFCDlg::OnBnClickedButtonCrash()
 	temp[900] = 123456;
 	delete[] temp;
 	delete[] temp;
+}
+
+void CMFCDlg::OnBnClickedButtonMsgbox()
+{
+	MessageBox(0, 0, 0);
+}
+
+void CMFCDlg::OnBnClickedButtonWhile()
+{
+	while (1) {
+		Sleep(200);
+	}
 }
