@@ -81,12 +81,28 @@ std::string toString(const T &value)
 	return std::to_string(value);
 }
 
+
+#include <random>
+int64_t generateRandomNumber(int64_t min, int64_t max)
+{
+	std::default_random_engine engine((unsigned int)std::chrono::steady_clock::now().time_since_epoch().count());
+	std::uniform_int_distribution<int64_t> dist(min, max);
+
+	auto num = dist(engine);
+	return num;
+}
+
+
 int main()
 {
+	for (int i = 0; i < 50; i++) {
+		printf("%d : %lld \n", i, generateRandomNumber(0, 50));
+	}
+
 	auto str = toString(123987);
 
 	auto id = StringToID("123");
-	auto id2 = StringToID("123");
+	auto id2 = StringToID("123"); // 和系统时间无关 只要输入的字符串一样 生成的hash id也会一样
 
 	test_format();
 	test_location(); 
