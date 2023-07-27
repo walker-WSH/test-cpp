@@ -75,8 +75,16 @@ inline size_t StringToID(std::string_view str)
 	return hash(str);
 }
 
+template<typename T> 
+std::string toString(const T &value)
+{
+	return std::to_string(value);
+}
+
 int main()
 {
+	auto str = toString(123987);
+
 	auto id = StringToID("123");
 	auto id2 = StringToID("123");
 
