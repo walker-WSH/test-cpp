@@ -69,18 +69,11 @@ void test_location(std::source_location location = std::source_location::current
 	printf("called from: %s, %s \n", location.function_name(), location.file_name());
 }
 
-inline size_t StringToID(std::string_view str)
+inline size_t StringToHash(std::string_view str)
 {
 	static std::hash<std::string_view> hash;
 	return hash(str);
 }
-
-template<typename T> 
-std::string toString(const T &value)
-{
-	return std::to_string(value);
-}
-
 
 #include <random>
 int64_t generateRandomNumber(int64_t min, int64_t max)
@@ -92,17 +85,29 @@ int64_t generateRandomNumber(int64_t min, int64_t max)
 	return num;
 }
 
-
 int main()
 {
 	for (int i = 0; i < 50; i++) {
 		printf("%d : %lld \n", i, generateRandomNumber(0, 50));
 	}
 
-	auto str = toString(123987);
+	/*
+	int stoi
+	long stol
+	unsigned long stoul
+	long long stoll
+	unsigned long long stoull
+	float stof
+	double stod
+	*/
+	auto t1 = stoi("123");
+	auto t2 = stof("3.1415926"); // 有误差
 
-	auto id = StringToID("123");
-	auto id2 = StringToID("123"); // 和系统时间无关 只要输入的字符串一样 生成的hash id也会一样
+	auto str1 = std::to_string(123987);
+	auto str2 = std::to_string(3.1415926f); // 有误差
+
+	auto id = StringToHash("123");
+	auto id2 = StringToHash("123"); // 和系统时间无关 只要输入的字符串一样 生成的hash id也会一样
 
 	test_format();
 	test_location(); 
