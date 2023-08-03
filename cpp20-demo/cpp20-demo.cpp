@@ -98,7 +98,7 @@ void consume()
 		std::unique_lock<std::mutex> lk(cv_m);
 
 		auto ret = cv.wait_for(lk, std::chrono::milliseconds(1000));
-		if (ret == std::cv_status::timeout) {
+		if (ret == std::cv_status::timeout) { // 此处判断应该是错误的：wait_for的返回值  并不是表达是否超时
 			printf("timeout %u \n", GetCurrentThreadId());
 		} else {
 			printf("wait done %u \n", GetCurrentThreadId());
@@ -112,7 +112,8 @@ void produce()
 		//cv.notify_one();
 		//cv.notify_all();
 
-		Sleep(5000);
+		
+		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
 	}
 }
 
@@ -120,7 +121,7 @@ void test_thread()
 {
 	std::thread t1(produce);
 
-	Sleep(2000);
+	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 
 	std::thread t3(consume);
 	//std::thread t2(consume); // 为什么启动两个线程  即使没调用notify  wait_for也返回了 no_timeout ？
