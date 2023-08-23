@@ -106,6 +106,24 @@ void test_thread()
 		CTestThread t;
 	}
 
+	//-------------------------------------------------------------
+	{
+		/*
+		// 推荐使用C++20的 jthread
+		它拥有同 std::thread 的行为外，主要增加了以下两个功能：
+		(1) std::jthread 对象被 destruct 时，会自动调用 join，等待其所表示的执行流结束。
+		(2) 支持外部请求中止（通过 get_stop_source、get_stop_token 和 request_stop ） ?????
+		*/
+
+		std::jthread my_thread([]() {
+			std::cout << "start sleep" << std::endl;
+			Sleep(5000);
+			std::cout << "finish sleep" << std::endl;
+		});
+
+		printf("to end \n"); // jthread析构时会自动等待join， 而std::thread则不会等待 此处就会发生错误
+	}
+
 	printf("------------------- \n");
 
 	//-------------------------------------------------------------
