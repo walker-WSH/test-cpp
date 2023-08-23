@@ -73,7 +73,14 @@ public:
 
 private:
 	void hello(int input)
-	{ printf("in class mem: %d %d  GetCurrentThreadId() :%lu \n", a, input, std::this_thread::get_id());
+	{ 
+		/*
+		yield()函数可以用来将调用者线程跳出运行状态，重新交给操作系统进行调度，
+		即当前线程放弃执行，操作系统调度另一线程继续执行
+		*/
+		std::this_thread::yield();
+
+		printf("in class mem: %d %d  GetCurrentThreadId() :%lu \n", a, input, std::this_thread::get_id());
 	}
 
 	int a = 123;
@@ -118,8 +125,19 @@ void test_thread()
 			Sleep(3000);
 			std::cout << "Hello 3 std::thread!" << std::endl;
 		});
+
+		/*
+		joinable：检查线程是否可被join。检查thread对象是否标识一个活动(active)的可行性线程。
+		缺省构造的thread对象、已经完成join的thread对象、已经detach的thread对象都不是joinable。
+		*/
 		assert(my_thread.joinable() == true);
+
+		/*
+		detach：将当前线程对象所代表的执行实例与该线程对象分离，使得线程的执行可以单独进行。
+		一旦线程执行完毕，它所分配的资源将会被释放。
+		*/
 		my_thread.detach(); // 在后台运行线程
+
 		assert(my_thread.joinable() == false);
 	}
 
