@@ -1,4 +1,5 @@
-﻿
+﻿#include "thread_test.h"
+
 #include <Windows.h>
 using namespace std;
 
@@ -86,54 +87,12 @@ int64_t generateRandomNumber(int64_t min, int64_t max)
 	return num;
 }
 
-#include <thread>
-#include <iostream>
-#include <condition_variable>
-#include <mutex>
-std::mutex cv_m;
-std::condition_variable cv;
-void consume()
-{
-	while (true) {
-		std::unique_lock<std::mutex> lk(cv_m);
-
-		auto ret = cv.wait_for(lk, std::chrono::milliseconds(1000));
-		if (ret == std::cv_status::timeout) { // 此处判断应该是错误的：wait_for的返回值  并不是表达是否超时
-			printf("timeout %u \n", GetCurrentThreadId());
-		} else {
-			printf("wait done %u \n", GetCurrentThreadId());
-		}
-	}
-}
-
-void produce()
-{
-	while (1) {
-		//cv.notify_one();
-		//cv.notify_all();
-
-		
-		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-	}
-}
-
-void test_thread()
-{
-	std::thread t1(produce);
-
-	std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-
-	std::thread t3(consume);
-	//std::thread t2(consume); // 为什么启动两个线程  即使没调用notify  wait_for也返回了 no_timeout ？
-
-	t1.join();
-	//t2.join();
-	t3.join();
-}
-
 int main()
 {
 	test_thread();
+
+
+	test_condition();
 
 	for (int i = 0; i < 50; i++) {
 		printf("%d : %lld \n", i, generateRandomNumber(0, 50));

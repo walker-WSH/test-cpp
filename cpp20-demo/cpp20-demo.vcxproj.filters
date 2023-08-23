@@ -10,5 +10,13 @@
     <ClCompile Include="cpp20-demo.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="thread_test.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="thread_test.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
