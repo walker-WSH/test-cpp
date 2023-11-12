@@ -24,7 +24,13 @@ static void produce()
 		//cv.notify_one();
 		//cv.notify_all();
 
+		std::chrono::steady_clock::time_point pos1 = std::chrono::steady_clock::now();
 		std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+		std::chrono::steady_clock::time_point pos2 = std::chrono::steady_clock::now();
+
+		std::chrono::steady_clock::duration dur = pos2 - pos1;
+		auto ms = duration_cast<std::chrono::milliseconds>(dur).count();
+		printf("take %llu ms to init \n", ms);
 	}
 }
 
