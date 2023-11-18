@@ -87,8 +87,11 @@ int64_t generateRandomNumber(int64_t min, int64_t max)
 	return num;
 }
 
+#include "test_gdip.h"
 int main()
 {
+	test_gdip();
+
 	test_thread();
 
 

@@ -144,9 +144,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cpp20-demo.cpp" />
+    <ClCompile Include="test_gdip.cpp" />
     <ClCompile Include="thread_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="test_gdip.h" />
     <ClInclude Include="thread_test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
