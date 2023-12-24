@@ -4,13 +4,21 @@
 std::mutex cv_m;
 std::condition_variable cv;
 
+
+uint64_t os_gettime_ns()
+{
+	auto tm = std::chrono::steady_clock::now().time_since_epoch().count();
+	return tm;
+}
+
+
 static void consume()
 {
 	while (true) {
 		std::unique_lock<std::mutex> lk(cv_m);
 
 		auto ret = cv.wait_for(lk, std::chrono::milliseconds(1000));
-		if (ret == std::cv_status::timeout) { // ´Ë´¦ÅĞ¶ÏÓ¦¸ÃÊÇ´íÎóµÄ£ºwait_forµÄ·µ»ØÖµ  ²¢²»ÊÇ±í´ïÊÇ·ñ³¬Ê±
+		if (ret == std::cv_status::timeout) { // æ­¤å¤„åˆ¤æ–­åº”è¯¥æ˜¯é”™è¯¯çš„ï¼šwait_forçš„è¿”å›å€¼  å¹¶ä¸æ˜¯è¡¨è¾¾æ˜¯å¦è¶…æ—¶
 			printf("timeout %u \n", GetCurrentThreadId());
 		} else {
 			printf("wait done %u \n", GetCurrentThreadId());
@@ -38,10 +46,10 @@ void test_condition()
 {
 	std::thread t1(produce);
 
-	std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // Ïàµ±ÓÚSleep
+	std::this_thread::sleep_for(std::chrono::milliseconds(2000)); // ç›¸å½“äºSleep
 
 	std::thread t3(consume);
-	//std::thread t2(consume); // ÎªÊ²Ã´Æô¶¯Á½¸öÏß³Ì  ¼´Ê¹Ã»µ÷ÓÃnotify  wait_forÒ²·µ»ØÁË no_timeout £¿
+	//std::thread t2(consume); // ä¸ºä»€ä¹ˆå¯åŠ¨ä¸¤ä¸ªçº¿ç¨‹  å³ä½¿æ²¡è°ƒç”¨notify  wait_forä¹Ÿè¿”å›äº† no_timeout ï¼Ÿ
 
 	t1.join();
 	t3.join();
@@ -57,9 +65,9 @@ void hello()
 	std::cout << "Hello 111 std::thread!" << std::endl;
 }
 
-void hello2(int a, std::string str) // ´Ë´¦µÄstring  ²»ÄÜÊ¹ÓÃÒıÓÃ´«²Î ÓÃÁËÒıÓÃÒ²±àÒë²»¹ı
+void hello2(int a, std::string str) // æ­¤å¤„çš„string  ä¸èƒ½ä½¿ç”¨å¼•ç”¨ä¼ å‚ ç”¨äº†å¼•ç”¨ä¹Ÿç¼–è¯‘ä¸è¿‡
 {
-	printf("in thread: %p \n", str.c_str()); // ´«½øÀ´µÄµØÖ· ºÍÍâ²¿²ÎÊı²»Ò»Ñù ×öÁË¿½±´
+	printf("in thread: %p \n", str.c_str()); // ä¼ è¿›æ¥çš„åœ°å€ å’Œå¤–éƒ¨å‚æ•°ä¸ä¸€æ · åšäº†æ‹·è´
 	printf("a: %d  str: %s \n", a, str.c_str());
 }
 
@@ -67,7 +75,7 @@ class CTestThread
 {
 public:
 	CTestThread() { 
-		// ³ÉÔ±º¯Êı×÷Îª¶àÏß³Ìº¯Êı
+		// æˆå‘˜å‡½æ•°ä½œä¸ºå¤šçº¿ç¨‹å‡½æ•°
 		t = new std::thread(&CTestThread::hello, this, 789);
 	}
 
@@ -81,8 +89,8 @@ private:
 	void hello(int input)
 	{ 
 		/*
-		yield()º¯Êı¿ÉÒÔÓÃÀ´½«µ÷ÓÃÕßÏß³ÌÌø³öÔËĞĞ×´Ì¬£¬ÖØĞÂ½»¸ø²Ù×÷ÏµÍ³½øĞĞµ÷¶È£¬
-		¼´µ±Ç°Ïß³Ì·ÅÆúÖ´ĞĞ£¬²Ù×÷ÏµÍ³µ÷¶ÈÁíÒ»Ïß³Ì¼ÌĞøÖ´ĞĞ
+		yield()å‡½æ•°å¯ä»¥ç”¨æ¥å°†è°ƒç”¨è€…çº¿ç¨‹è·³å‡ºè¿è¡ŒçŠ¶æ€ï¼Œé‡æ–°äº¤ç»™æ“ä½œç³»ç»Ÿè¿›è¡Œè°ƒåº¦ï¼Œ
+		å³å½“å‰çº¿ç¨‹æ”¾å¼ƒæ‰§è¡Œï¼Œæ“ä½œç³»ç»Ÿè°ƒåº¦å¦ä¸€çº¿ç¨‹ç»§ç»­æ‰§è¡Œ
 		*/
 		std::this_thread::yield();
 
@@ -96,15 +104,15 @@ private:
 void test_thread()
 {
 	/*
-	Í¬Ê±ÅÜ¼¸¸öÏß³ÌºÏÊÊ£¿ÍÆ¼öÊ¹ÓÃstd::thread::hardware_concurrency(), 
-	ÔÚ¶àºË¼Ü¹¹µÄÔËĞĞ»·¾³ÉÏ£¬Õâ¸ö·µ»ØÖµÒ»°ã¶ÔÓ¦ºËµÄ¿ÅÊı¡£
+	åŒæ—¶è·‘å‡ ä¸ªçº¿ç¨‹åˆé€‚ï¼Ÿæ¨èä½¿ç”¨std::thread::hardware_concurrency(), 
+	åœ¨å¤šæ ¸æ¶æ„çš„è¿è¡Œç¯å¢ƒä¸Šï¼Œè¿™ä¸ªè¿”å›å€¼ä¸€èˆ¬å¯¹åº”æ ¸çš„é¢—æ•°ã€‚
 	*/
 	auto count = std::thread::hardware_concurrency();
 
 	//-------------------------------------------------------------
 	{
 		std::thread t(hello);
-		t.join(); //µÈ´ıÏß³ÌÖ±µ½Ö´ĞĞÍê³É
+		t.join(); //ç­‰å¾…çº¿ç¨‹ç›´åˆ°æ‰§è¡Œå®Œæˆ
 	}
 
 	//-------------------------------------------------------------
@@ -115,10 +123,10 @@ void test_thread()
 	//-------------------------------------------------------------
 	{
 		/*
-		// ÍÆ¼öÊ¹ÓÃC++20µÄ jthread
-		ËüÓµÓĞÍ¬ std::thread µÄĞĞÎªÍâ£¬Ö÷ÒªÔö¼ÓÁËÒÔÏÂÁ½¸ö¹¦ÄÜ£º
-		(1) std::jthread ¶ÔÏó±» destruct Ê±£¬»á×Ô¶¯µ÷ÓÃ join£¬µÈ´ıÆäËù±íÊ¾µÄÖ´ĞĞÁ÷½áÊø¡£
-		(2) Ö§³ÖÍâ²¿ÇëÇóÖĞÖ¹£¨Í¨¹ı get_stop_source¡¢get_stop_token ºÍ request_stop £© ?????
+		// æ¨èä½¿ç”¨C++20çš„ jthread
+		å®ƒæ‹¥æœ‰åŒ std::thread çš„è¡Œä¸ºå¤–ï¼Œä¸»è¦å¢åŠ äº†ä»¥ä¸‹ä¸¤ä¸ªåŠŸèƒ½ï¼š
+		(1) std::jthread å¯¹è±¡è¢« destruct æ—¶ï¼Œä¼šè‡ªåŠ¨è°ƒç”¨ joinï¼Œç­‰å¾…å…¶æ‰€è¡¨ç¤ºçš„æ‰§è¡Œæµç»“æŸã€‚
+		(2) æ”¯æŒå¤–éƒ¨è¯·æ±‚ä¸­æ­¢ï¼ˆé€šè¿‡ get_stop_sourceã€get_stop_token å’Œ request_stop ï¼‰ ?????
 		*/
 
 		std::jthread my_thread([]() {
@@ -127,7 +135,7 @@ void test_thread()
 			std::cout << "finish sleep" << std::endl;
 		});
 
-		printf("to end \n"); // jthreadÎö¹¹Ê±»á×Ô¶¯µÈ´ıjoin£¬ ¶østd::threadÔò²»»áµÈ´ı ´Ë´¦¾Í»á·¢Éú´íÎó
+		printf("to end \n"); // jthreadææ„æ—¶ä¼šè‡ªåŠ¨ç­‰å¾…joinï¼Œ è€Œstd::threadåˆ™ä¸ä¼šç­‰å¾… æ­¤å¤„å°±ä¼šå‘ç”Ÿé”™è¯¯
 	}
 
 	printf("------------------- \n");
@@ -138,7 +146,7 @@ void test_thread()
 		printf("origin: %p \n", strP.c_str());
 
 		std::thread t(hello2, 789, strP);
-		t.join(); //µÈ´ıÏß³ÌÖ±µ½Ö´ĞĞÍê³É
+		t.join(); //ç­‰å¾…çº¿ç¨‹ç›´åˆ°æ‰§è¡Œå®Œæˆ
 	}
 
 	//-------------------------------------------------------------
@@ -151,16 +159,16 @@ void test_thread()
 		});
 
 		/*
-		joinable£º¼ì²éÏß³ÌÊÇ·ñ¿É±»join¡£¼ì²éthread¶ÔÏóÊÇ·ñ±êÊ¶Ò»¸ö»î¶¯(active)µÄ¿ÉĞĞĞÔÏß³Ì¡£
-		È±Ê¡¹¹ÔìµÄthread¶ÔÏó¡¢ÒÑ¾­Íê³ÉjoinµÄthread¶ÔÏó¡¢ÒÑ¾­detachµÄthread¶ÔÏó¶¼²»ÊÇjoinable¡£
+		joinableï¼šæ£€æŸ¥çº¿ç¨‹æ˜¯å¦å¯è¢«joinã€‚æ£€æŸ¥threadå¯¹è±¡æ˜¯å¦æ ‡è¯†ä¸€ä¸ªæ´»åŠ¨(active)çš„å¯è¡Œæ€§çº¿ç¨‹ã€‚
+		ç¼ºçœæ„é€ çš„threadå¯¹è±¡ã€å·²ç»å®Œæˆjoinçš„threadå¯¹è±¡ã€å·²ç»detachçš„threadå¯¹è±¡éƒ½ä¸æ˜¯joinableã€‚
 		*/
 		assert(my_thread.joinable() == true);
 
 		/*
-		detach£º½«µ±Ç°Ïß³Ì¶ÔÏóËù´ú±íµÄÖ´ĞĞÊµÀıÓë¸ÃÏß³Ì¶ÔÏó·ÖÀë£¬Ê¹µÃÏß³ÌµÄÖ´ĞĞ¿ÉÒÔµ¥¶À½øĞĞ¡£
-		Ò»µ©Ïß³ÌÖ´ĞĞÍê±Ï£¬ËüËù·ÖÅäµÄ×ÊÔ´½«»á±»ÊÍ·Å¡£
+		detachï¼šå°†å½“å‰çº¿ç¨‹å¯¹è±¡æ‰€ä»£è¡¨çš„æ‰§è¡Œå®ä¾‹ä¸è¯¥çº¿ç¨‹å¯¹è±¡åˆ†ç¦»ï¼Œä½¿å¾—çº¿ç¨‹çš„æ‰§è¡Œå¯ä»¥å•ç‹¬è¿›è¡Œã€‚
+		ä¸€æ—¦çº¿ç¨‹æ‰§è¡Œå®Œæ¯•ï¼Œå®ƒæ‰€åˆ†é…çš„èµ„æºå°†ä¼šè¢«é‡Šæ”¾ã€‚
 		*/
-		my_thread.detach(); // ÔÚºóÌ¨ÔËĞĞÏß³Ì
+		my_thread.detach(); // åœ¨åå°è¿è¡Œçº¿ç¨‹
 
 		assert(my_thread.joinable() == false);
 	}
